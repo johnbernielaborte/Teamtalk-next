@@ -579,6 +579,11 @@ public class TeamTalkService extends Service implements BluetoothHeadsetHelper.H
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        try {
+            org.nekit.ttproplus.plugin.PluginManager.getInstance().init(getApplicationContext(), this);
+        } catch (Throwable t) {
+            android.util.Log.e("TeamTalkService", "Failed to init PluginManager", t);
+        }
         this.audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         TeamTalk5.loadLibrary();
         TeamTalk5.setLicenseInformation("", "");
@@ -706,6 +711,9 @@ public class TeamTalkService extends Service implements BluetoothHeadsetHelper.H
     @Override
     public void onDestroy() {
         if (sInstance == this) sInstance = null;
+        try {
+            org.nekit.ttproplus.plugin.PluginManager.getInstance().setService(null);
+        } catch (Throwable ignored) {}
         this.manualDisconnect = true;
         this.isSeamlessReconnecting = false;
         if (this.reconnectHandler != null) {
@@ -2442,6 +2450,13 @@ public class TeamTalkService extends Service implements BluetoothHeadsetHelper.H
 
     @Override
     public void onCmdUserTextMessage(TextMessage textmessage) {
+        if (textmessage != null) {
+            try {
+                if (org.nekit.ttproplus.plugin.PluginManager.getInstance().onTextMessageReceived(textmessage)) {
+                    return;
+                }
+            } catch (Throwable ignored) {}
+        }
         int limit;
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (pref.getBoolean(Preferences.PREF_ANTISPAM_ENABLED, false) && !this.antispam_blocked.isEmpty() && this.antispam_blocked.contains(Integer.valueOf(textmessage.nFromUserID))) {

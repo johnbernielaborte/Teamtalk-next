@@ -1,0 +1,10 @@
+{
+  "id": "org.nekit.plugin.logger",
+  "name": "Channel Logger",
+  "version": "1.0.0",
+  "versionCode": 1,
+  "author": "Nekit",
+  "description": "Логирует события канала и переходы пользователей в приватную папку плагина.",
+  "mainClass": "org.nekit.plugin.logger.ChannelLoggerPlugin",
+  "minClientVersion": "5.28.6"
+}

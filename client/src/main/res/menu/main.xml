@@ -38,6 +38,9 @@
                 android:id="@+id/action_edit"
                 android:title="@string/action_edit"/>
             <item
+                android:id="@+id/action_join_channel_by_id"
+                android:title="@string/action_join_channel_by_id"/>
+            <item
                 android:id="@+id/action_stream"
                 android:title="@string/action_stream"/>
             <item
@@ -113,6 +116,13 @@
                 android:title="@string/action_publishsrv"/>
         </menu>
     </item>
+
+    <!-- Plugins -->
+    <item
+        android:id="@+id/action_plugins"
+        android:orderInCategory="900"
+        app:showAsAction="never"
+        android:title="@string/action_plugins"/>
 
     <!-- Settings at root -->
     <item

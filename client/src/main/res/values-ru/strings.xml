@@ -1436,4 +1436,43 @@
     <string name="filter_dialogs_online">В сети</string>
     <string name="private_chats_empty_server_title">Нет сообщений за сессию</string>
     <string name="private_chats_empty_server_desc">Пользователи, которые напишут вам во время пребывания на сервере, появятся здесь</string>
+
+    <!-- Channel ID and Join by ID -->
+    <string name="channel_prop_title_id">ID канала</string>
+    <string name="copy_channel_id_hint">Нажмите для копирования</string>
+    <string name="channel_id_copied">ID канала скопирован в буфер обмена</string>
+    <string name="action_join_channel_by_id">Присоединиться по ID канала</string>
+    <string name="dialog_join_channel_id_title">Присоединиться по ID канала</string>
+    <string name="dialog_join_channel_id_prompt">Введите ID канала и пароль (если требуется):</string>
+    <string name="dialog_join_channel_id_hint">ID канала (например, 1)</string>
+    <string name="dialog_join_channel_password_hint">Пароль канала (необязательно)</string>
+    <string name="invalid_channel_id">Некорректный ID канала. Введите положительное число.</string>
+    <string name="joining_channel_id_format">Подключение к каналу #%d…</string>
+
+    <!-- Plugins -->
+    <string name="action_plugins">Плагины</string>
+    <string name="title_activity_plugin_manager">Управление плагинами</string>
+    <string name="plugin_install_btn">Установить плагин</string>
+    <string name="plugin_reload_btn">Перезагрузить</string>
+    <string name="plugin_empty_title">Нет установленных плагинов</string>
+    <string name="plugin_empty_desc">Нажмите «Установить» или поместите .jar/.dex плагины в папку:</string>
+    <string name="plugin_status_enabled">Включен</string>
+    <string name="plugin_status_disabled">Отключен</string>
+    <string name="plugin_status_error">Ошибка</string>
+    <string name="plugin_installed_success">Плагин «%s» успешно установлен</string>
+    <string name="plugin_delete_confirm">Удалить плагин «%s»?</string>
+    <string name="plugin_deleted">Плагин удален</string>
+    <string name="plugin_enabled_toast">Плагин включен</string>
+    <string name="plugin_disabled_toast">Плагин отключен</string>
+    <string name="plugin_folder_copied">Путь к папке плагинов скопирован в буфер обмена</string>
+    <string name="plugin_author_format">Автор: %s</string>
+    <string name="plugin_version_format">v%s</string>
+    <string name="plugin_install_error_title">Ошибка установки плагина</string>
+    <string name="plugin_install_error_message">Не удалось установить «%1$s»:\n\n%2$s</string>
+    <string name="plugin_err_no_plugin_json">В архиве отсутствует файл манифеста plugin.json</string>
+    <string name="plugin_err_no_classes_dex">В архиве отсутствует скомпилированный Dalvik DEX (classes.dex). Скомпилируйте плагин с помощью d8.</string>
+    <string name="plugin_err_main_class_not_found">Главный класс плагина «%s» не найден в DEX</string>
+    <string name="plugin_err_main_class_invalid">Класс «%s» не реализует интерфейс Plugin</string>
+    <string name="plugin_err_cannot_read_file">Не удалось прочитать выбранный файл</string>
+    <string name="plugin_picker_error">Ошибка выбора файла: %s</string>
 </resources>

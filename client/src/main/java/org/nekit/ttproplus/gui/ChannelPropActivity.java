@@ -46,10 +46,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ChannelPropActivity
@@ -255,6 +257,32 @@ implements TeamTalkConnectionListener, ClientEventListener.OnCmdErrorListener, C
             chanNoVoiceAct.setChecked((channel.uChannelType & ChannelType.CHANNEL_NO_VOICEACTIVATION) != 0);
             chanNoAudioRec.setChecked((channel.uChannelType & ChannelType.CHANNEL_NO_RECORDING) != 0);
             chanHidden.setChecked((channel.uChannelType & ChannelType.CHANNEL_HIDDEN) != 0);
+
+            View layoutChanId = findViewById(R.id.layout_chan_id);
+            TextView chanIdView = findViewById(R.id.chanid);
+            View btnCopyChanId = findViewById(R.id.btn_copy_chan_id);
+            if (channel.nChannelID > 0) {
+                if (layoutChanId != null) {
+                    layoutChanId.setVisibility(android.view.View.VISIBLE);
+                }
+                if (chanIdView != null) {
+                    chanIdView.setText(String.valueOf(channel.nChannelID));
+                }
+                if (btnCopyChanId != null) {
+                    btnCopyChanId.setOnClickListener(v -> {
+                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (clipboard != null) {
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("Channel ID", String.valueOf(channel.nChannelID));
+                            clipboard.setPrimaryClip(clip);
+                            Toast.makeText(ChannelPropActivity.this, R.string.channel_id_copied, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            } else {
+                if (layoutChanId != null) {
+                    layoutChanId.setVisibility(android.view.View.GONE);
+                }
+            }
         }
     }
 

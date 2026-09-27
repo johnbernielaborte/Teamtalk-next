@@ -1,0 +1,10 @@
+{
+  "id": "org.nekit.plugin.utility",
+  "name": "Utility Commands",
+  "version": "1.0.0",
+  "versionCode": 1,
+  "author": "Nekit",
+  "description": "Полезные слэш-команды в чате: /ping, /roll, /calc, /channelid.",
+  "mainClass": "org.nekit.plugin.utility.UtilityCommandsPlugin",
+  "minClientVersion": "5.28.6"
+}

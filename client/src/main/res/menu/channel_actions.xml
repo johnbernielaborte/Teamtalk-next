@@ -5,6 +5,10 @@
         android:title="@string/action_edit"/>
 
     <item
+        android:id="@+id/action_join_channel_by_id"
+        android:title="@string/action_join_channel_by_id"/>
+
+    <item
         android:id="@+id/action_move"
         android:title="@string/action_move"/>
 

@@ -400,6 +400,11 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
 
         MenuItem editItem = menu.findItem(R.id.action_edit);
         if (editItem != null) editItem.setEnabled(isEditable).setVisible(isEditable);
+        MenuItem joinByIdItem = menu.findItem(R.id.action_join_channel_by_id);
+        if (joinByIdItem != null) {
+            boolean isConn = getClient() != null && (getClient().getFlags() & ClientFlag.CLIENT_CONNECTED) != 0;
+            joinByIdItem.setEnabled(isConn).setVisible(isConn);
+        }
         MenuItem uploadItem = menu.findItem(R.id.action_upload);
         if (uploadItem != null) uploadItem.setEnabled(uploadRight).setVisible(uploadRight);
         MenuItem bcastItem = menu.findItem(R.id.action_broadcast);
@@ -590,6 +595,14 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
                 editChannelProperties(this.curchannel);
                 return true;
             }
+            return true;
+        }
+        if (itemId == R.id.action_join_channel_by_id) {
+            showJoinChannelByIdDialog();
+            return true;
+        }
+        if (itemId == R.id.action_plugins) {
+            startActivity(new Intent(this, (Class<?>) PluginManagerActivity.class));
             return true;
         }
         if (itemId == R.id.action_newchannel) {
@@ -1771,6 +1784,110 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
         im.hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
 
+    public void showJoinChannelByIdDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.dialog_join_channel_id_title);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        int paddingPx = (int) (16 * getResources().getDisplayMetrics().density);
+        layout.setPadding(paddingPx, paddingPx / 2, paddingPx, paddingPx / 2);
+
+        TextView promptText = new TextView(this);
+        promptText.setText(R.string.dialog_join_channel_id_prompt);
+        promptText.setPadding(0, 0, 0, paddingPx / 2);
+        layout.addView(promptText);
+
+        final EditText idInput = new EditText(this);
+        idInput.setHint(R.string.dialog_join_channel_id_hint);
+        idInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+        idInput.setSingleLine(true);
+        layout.addView(idInput);
+
+        final EditText passInput = new EditText(this);
+        passInput.setHint(R.string.dialog_join_channel_password_hint);
+        passInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passInput.setSingleLine(true);
+        layout.addView(passInput);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton(R.string.action_join_channel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String idStr = idInput.getText().toString().trim();
+                if (idStr.isEmpty()) {
+                    Toast.makeText(MainActivity.this, R.string.invalid_channel_id, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                int channelId;
+                try {
+                    channelId = Integer.parseInt(idStr);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, R.string.invalid_channel_id, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (channelId <= 0) {
+                    Toast.makeText(MainActivity.this, R.string.invalid_channel_id, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String password = passInput.getText().toString();
+                joinChannelById(channelId, password);
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void joinChannelById(final int channelId, final String password) {
+        if (getService() == null || getClient() == null) {
+            return;
+        }
+
+        Channel target = getService().getChannels().get(Integer.valueOf(channelId));
+        if (target != null) {
+            if (target.bPassword && (password == null || password.isEmpty())) {
+                joinChannel(target);
+                return;
+            }
+            joinChannel(target, password != null ? password : "");
+            return;
+        }
+
+        if (this.filesAdapter != null && this.filesAdapter.getActiveTransfersCount() > 0) {
+            new AlertDialog.Builder(this)
+                .setMessage(R.string.channel_change_alert)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int w) {
+                        if (MainActivity.this.filesAdapter != null) {
+                            MainActivity.this.filesAdapter.cancelAllTransfers();
+                        }
+                        MainActivity.this.joinChannelByIdDirect(channelId, password);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+            return;
+        }
+        joinChannelByIdDirect(channelId, password);
+    }
+
+    private void joinChannelByIdDirect(int channelId, String password) {
+        if (getClient() == null || getService() == null) {
+            return;
+        }
+        String pwd = password != null ? password : "";
+        Channel dummy = new Channel(true, true);
+        dummy.nChannelID = channelId;
+        dummy.szPassword = pwd;
+        joinChannelUnsafe(dummy, pwd);
+        Toast.makeText(this, getString(R.string.joining_channel_id_format, channelId), Toast.LENGTH_SHORT).show();
+    }
+
     private void subscriptionChange(User user) {
         User olduser = this.users.get(Integer.valueOf(user.nUserID));
         if (olduser != null && this.ttsWrapper != null) {
@@ -1955,6 +2072,32 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
             if (text.isEmpty()) {
                 return;
             }
+
+            // Slash command handling for plugins
+            if (text.startsWith("/")) {
+                final int myChannelId = this.mainActivity.getClient().getMyChannelID();
+                final int myUserId = this.mainActivity.getClient().getMyUserID();
+                org.nekit.ttproplus.plugin.PluginCommandSender sender = new org.nekit.ttproplus.plugin.PluginCommandSender() {
+                    @Override
+                    public void sendMessage(String message) {
+                        if (mainActivity != null && message != null) {
+                            mainActivity.runOnUiThread(() -> Toast.makeText(mainActivity, message, Toast.LENGTH_LONG).show());
+                        }
+                    }
+                    @Override
+                    public boolean isLocalUser() { return true; }
+                    @Override
+                    public int getSenderUserId() { return myUserId; }
+                    @Override
+                    public int getChannelId() { return myChannelId; }
+                };
+
+                if (org.nekit.ttproplus.plugin.PluginManager.getInstance().handleCommand(text, sender)) {
+                    this.newmsg.setText("");
+                    return;
+                }
+            }
+
             MyTextMessage textmsg = new MyTextMessage();
             textmsg.nMsgType = 2;
             textmsg.nChannelID = this.mainActivity.getClient().getMyChannelID();
@@ -1963,6 +2106,9 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
             Iterator<MyTextMessage> it = textmsg.split().iterator();
             while (it.hasNext()) {
                 MyTextMessage m = it.next();
+                if (org.nekit.ttproplus.plugin.PluginManager.getInstance().onTextMessageSending(m)) {
+                    continue;
+                }
                 cmdid = this.mainActivity.getClient().doTextMessage(m);
             }
             MainActivity mainActivity = this.mainActivity;
@@ -3429,6 +3575,8 @@ public class MainActivity extends AppCompatActivity implements TeamTalkConnectio
             alert.show();
         } else if (itemId == R.id.action_edit) {
             editChannelProperties(this.selectedChannel);
+        } else if (itemId == R.id.action_join_channel_by_id) {
+            showJoinChannelByIdDialog();
         } else if (itemId == R.id.action_edituser) {
             startActivityForResult(new Intent(this, (Class<?>) UserPropActivity.class).putExtra("userid", this.selectedUser.nUserID), 3);
         } else if (itemId == R.id.action_message) {

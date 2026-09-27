@@ -2,6 +2,46 @@
 <ScrollView android:layout_width="match_parent" android:layout_height="match_parent"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout android:orientation="vertical" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/layout_chan_id"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+            <TextView
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="@string/channel_prop_title_id" />
+            <LinearLayout
+                android:id="@+id/btn_copy_chan_id"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/edit_text_background"
+                android:padding="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/chanid"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.0"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textIsSelectable="true" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="?attr/colorAccent"
+                    android:text="@string/copy_channel_id_hint" />
+            </LinearLayout>
+        </LinearLayout>
         <TextView android:textSize="14sp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:text="@string/channel_prop_title_name" />
         <EditText android:id="@+id/channame" android:background="@drawable/edit_text_background" android:padding="10dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:hint="@string/channamelab" android:singleLine="true" android:inputType="text" />
         <TextView android:textSize="14sp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:text="@string/channel_prop_title_topic" />

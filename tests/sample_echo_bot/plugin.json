@@ -1,0 +1,10 @@
+{
+  "id": "org.nekit.plugin.echobot",
+  "name": "Echo Bot Plugin",
+  "version": "1.0.0",
+  "versionCode": 1,
+  "author": "Nekit",
+  "description": "Автоматически отвечает на входящие личные сообщения и предоставляет команду /echoping.",
+  "mainClass": "org.nekit.plugin.echo.EchoBotPlugin",
+  "minClientVersion": "5.28.6"
+}
