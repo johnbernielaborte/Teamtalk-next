@@ -123,4 +123,3 @@ jobs:
             TeamTalkNext-5.28.6-source.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
