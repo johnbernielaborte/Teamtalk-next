@@ -40,3 +40,4 @@ def update_version(new_version):
 if __name__ == '__main__':
     ver = sys.argv[1] if len(sys.argv) > 1 else '5.28.0'
     update_version(ver)
+
